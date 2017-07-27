@@ -840,8 +840,8 @@ int FlexCAN::write (const CAN_message_t &msg, uint8_t mbox)
           result=1;
       }
     } 
-    if (result==0 && txRings[mbox]!=0) {
-      result=(txRings[mbox]!=0 && addToRingBuffer (*txRings[mbox], msg) == true);
+    if (result==0 && txRings[mbox]!=0 && addToRingBuffer(*txRings[mbox], msg) ) {
+      result=1;
     }
       
     irqRelease();

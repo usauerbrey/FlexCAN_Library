@@ -27,7 +27,8 @@
 # define INCLUDE_FLEXCAN_CAN1
 #endif
 
-#undef INCLUDE_FLEXCAN_DEBUG
+//#undef INCLUDE_FLEXCAN_DEBUG
+#define INCLUDE_FLEXCAN_DEBUG
 
 #if defined(INCLUDE_FLEXCAN_DEBUG)
 # define dbg_print(fmt, args...)     Serial.print (fmt , ## args)
@@ -174,6 +175,8 @@ void FlexCAN::end (void)
 
 void FlexCAN::begin (uint32_t baud, const CAN_filter_t &mask, uint8_t txAlt, uint8_t rxAlt)
 {
+    dbg_println ("FlexCAN::begin");
+
     initializeBuffers();
     
     // set up the pins
@@ -293,23 +296,45 @@ void FlexCAN::initializeBuffers() {
 
 void FlexCAN::setPins(uint8_t txAlt, uint8_t rxAlt) {
     if (flexcanBase == FLEXCAN0_BASE) {
-        dbg_println ("Begin setup of CAN0");
+        dbg_println ("Begin of setPins of CAN0");
+
+	    // PIN debug information
+    	dbg_println (" PIN debug information:");
+    	dbg_print ("  txALT = ");
+    	dbg_println (txAlt);
+    	dbg_print ("  rxALT = ");
+    	dbg_println (rxAlt);
+
 
 #if defined(__MK66FX1M0__) || defined(__MK64FX512__)
         //  3=PTA12=CAN0_TX,  4=PTA13=CAN0_RX (default)
         // 29=PTB18=CAN0_TX, 30=PTB19=CAN0_RX (alternative)
 
-        if (txAlt == 1)
+//#if defined(__MK66FX1M0__)
+//            CORE_PIN29_CONFIG = PORT_PCR_MUX(2);
+//    	      dbg_println ("CORE_PIN29_CONFIG:");
+//#else
+        if (txAlt == 1) {
             CORE_PIN29_CONFIG = PORT_PCR_MUX(2);
+    	      dbg_println ("CORE_PIN29_CONFIG:");
+    	    }
         else
             CORE_PIN3_CONFIG = PORT_PCR_MUX(2);
+//#endif
 
         // | PORT_PCR_PE | PORT_PCR_PS;
 
-        if (rxAlt == 1)
+//#if defined(__MK66FX1M0__)
+//            CORE_PIN30_CONFIG = PORT_PCR_MUX(2);
+//    	      dbg_println ("CORE_PIN30_CONFIG:");
+//#else
+        if (rxAlt == 1) {
             CORE_PIN30_CONFIG = PORT_PCR_MUX(2);
+    	      dbg_println ("CORE_PIN30_CONFIG:");
+    	    }
         else
             CORE_PIN4_CONFIG = PORT_PCR_MUX(2);
+//#endif
 #else
         //  3=PTA12=CAN0_TX,  4=PTA13=CAN0_RX (default)
         // 32=PTB18=CAN0_TX, 25=PTB19=CAN0_RX (alternative)

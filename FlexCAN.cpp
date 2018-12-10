@@ -27,8 +27,8 @@
 # define INCLUDE_FLEXCAN_CAN1
 #endif
 
-//#undef INCLUDE_FLEXCAN_DEBUG
-#define INCLUDE_FLEXCAN_DEBUG
+#undef INCLUDE_FLEXCAN_DEBUG
+//#define INCLUDE_FLEXCAN_DEBUG
 
 #if defined(INCLUDE_FLEXCAN_DEBUG)
 # define dbg_print(fmt, args...)     Serial.print (fmt , ## args)
@@ -296,7 +296,7 @@ void FlexCAN::initializeBuffers() {
 
 void FlexCAN::setPins(uint8_t txAlt, uint8_t rxAlt) {
     if (flexcanBase == FLEXCAN0_BASE) {
-        dbg_println ("Begin of setPins of CAN0");
+      dbg_println ("Begin of setPins of CAN0");
 
 	    // PIN debug information
     	dbg_println (" PIN debug information:");
@@ -305,37 +305,36 @@ void FlexCAN::setPins(uint8_t txAlt, uint8_t rxAlt) {
     	dbg_print ("  rxALT = ");
     	dbg_println (rxAlt);
 
-
-#if defined(__MK66FX1M0__) || defined(__MK64FX512__)
+#if defined(__MK66FX1M0__) || defined(__MK64FX512__)      // teensy 3.6 oder teensy 3.5
         //  3=PTA12=CAN0_TX,  4=PTA13=CAN0_RX (default)
         // 29=PTB18=CAN0_TX, 30=PTB19=CAN0_RX (alternative)
 
-//#if defined(__MK66FX1M0__)
-//            CORE_PIN29_CONFIG = PORT_PCR_MUX(2);
-//    	      dbg_println ("CORE_PIN29_CONFIG:");
-//#else
+#if defined(__MK66FX1M0__)      // teensy 3.6
+            CORE_PIN29_CONFIG = PORT_PCR_MUX(2);
+    	      dbg_println ("CORE_PIN29_CONFIG:");
+#else
         if (txAlt == 1) {
             CORE_PIN29_CONFIG = PORT_PCR_MUX(2);
     	      dbg_println ("CORE_PIN29_CONFIG:");
     	    }
         else
             CORE_PIN3_CONFIG = PORT_PCR_MUX(2);
-//#endif
+#endif                          // teensy 3.6
 
         // | PORT_PCR_PE | PORT_PCR_PS;
 
-//#if defined(__MK66FX1M0__)
-//            CORE_PIN30_CONFIG = PORT_PCR_MUX(2);
-//    	      dbg_println ("CORE_PIN30_CONFIG:");
-//#else
+#if defined(__MK66FX1M0__)      // teensy 3.6
+            CORE_PIN30_CONFIG = PORT_PCR_MUX(2);
+    	      dbg_println ("CORE_PIN30_CONFIG:");
+#else
         if (rxAlt == 1) {
             CORE_PIN30_CONFIG = PORT_PCR_MUX(2);
     	      dbg_println ("CORE_PIN30_CONFIG:");
     	    }
         else
             CORE_PIN4_CONFIG = PORT_PCR_MUX(2);
-//#endif
-#else
+#endif                          // teensy 3.6
+#else      // not teensy 3.6 and not teensy 3.5
         //  3=PTA12=CAN0_TX,  4=PTA13=CAN0_RX (default)
         // 32=PTB18=CAN0_TX, 25=PTB19=CAN0_RX (alternative)
 
@@ -350,7 +349,7 @@ void FlexCAN::setPins(uint8_t txAlt, uint8_t rxAlt) {
             CORE_PIN25_CONFIG = PORT_PCR_MUX(2);
         else
             CORE_PIN4_CONFIG = PORT_PCR_MUX(2);
-#endif
+#endif     // teensy 3.6 oder teensy 3.5
     }
 #if defined(INCLUDE_FLEXCAN_CAN1)
     else if (flexcanBase == FLEXCAN1_BASE) {
